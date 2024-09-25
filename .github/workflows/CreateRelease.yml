@@ -25,7 +25,6 @@ jobs:
         id: latest_version
         run: |
           LATEST_VERSION=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r .name)
-          echo "LATEST_VERSION=$LATEST_VERSION"
           echo "LATEST_VERSION=$LATEST_VERSION" >> $GITHUB_ENV
 
       - name: Increment the version
@@ -41,14 +40,19 @@ jobs:
           fi
           NEW_VERSION="$V_MAJOR.$V_MINOR"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-          echo "::set-output name=new_version::$NEW_VERSION"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.NIKHILMENGHANI_GITHUB_TOKEN }}
+        uses: actions/github-script@v6
         with:
-          tag_name: v${{ steps.increment_version.outputs.new_version }}
-          release_name: ${{ steps.increment_version.outputs.new_version }}
-          draft: false
-          prerelease: false
+          github-token: ${{ secrets.NIKHILMENGHANI_GITHUB_TOKEN }}
+          script: |
+            const newVersion = process.env.NEW_VERSION;
+            await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: `v${newVersion}`,
+              name: newVersion,
+              draft: false,
+              prerelease: false,
+            });
