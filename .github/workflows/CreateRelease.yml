@@ -56,3 +56,45 @@ jobs:
               draft: false,
               prerelease: false,
             });
+
+      - name: Delete older releases
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.NIKHILMENGHANI_GITHUB_TOKEN }}
+          script: |
+            const { data: releases } = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            });
+            
+            // Sort releases by creation date descending (latest first)
+            const sortedReleases = releases.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            
+            // Get releases beyond the latest 5
+            const releasesToDelete = sortedReleases.slice(5);
+            
+            for (const release of releasesToDelete) {
+              // Delete the release
+              await github.rest.repos.deleteRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: release.id,
+              });
+            
+              // Delete the tag associated with the release
+              try {
+                await github.rest.git.deleteRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: `tags/${release.tag_name}`,
+                });
+              } catch (error) {
+                // Ignore errors if the tag does not exist
+                if (error.status !== 422) {
+                  throw error;
+                }
+              }
+            
+              console.log(`Deleted release ${release.name} and tag ${release.tag_name}`);
+            }
