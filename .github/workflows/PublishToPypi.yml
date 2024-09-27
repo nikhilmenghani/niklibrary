@@ -122,7 +122,7 @@ jobs:
         run: |
           VERSION=${{ needs.auto-release.outputs.new_version }}
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
-          python update_version.py
+          python update_version.py --version $VERSION
       - name: Build package
         run: python -m build
       - name: Publish package
