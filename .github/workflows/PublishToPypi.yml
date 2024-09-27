@@ -18,7 +18,8 @@ jobs:
   auto-release:
     name: Auto Release
     runs-on: ubuntu-latest
-
+    outputs:
+      new_version: ${{ steps.increment_version.outputs.new_version }}
     steps:
       - uses: actions/checkout@v4
 
