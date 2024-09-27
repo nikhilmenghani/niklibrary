@@ -3,7 +3,7 @@ import os
 import time
 from datetime import datetime
 import pytz
-from helper.P import P
+from niklibrary.helper.P import P
 
 
 class T:
