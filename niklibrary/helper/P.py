@@ -21,3 +21,4 @@ class P:
     @staticmethod
     def magenta(message):
         print(Fore.MAGENTA + str(message) + Fore.RESET)
+

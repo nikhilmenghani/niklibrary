@@ -5,7 +5,7 @@ import stat
 from pathlib import Path
 
 
-class FileOp:
+class F:
     @staticmethod
     def create_file_dir(file_path):
         parent_dir = str(Path(file_path).parent)
@@ -96,13 +96,6 @@ class FileOp:
         return hash_md5.hexdigest()
 
     @staticmethod
-    def get_immediate_subdirectories(path):
-        """
-        Get a list of immediate subdirectories for the given path.
-        """
-        return [d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))]
-
-    @staticmethod
     def convert_size(size_bytes):
         """
         Convert the size from bytes to a more readable format (KB, MB, GB).
@@ -118,12 +111,12 @@ class FileOp:
 
     @staticmethod
     def copy_file(source, destination):
-        FileOp.create_file_dir(destination)
+        F.create_file_dir(destination)
         shutil.copy2(source, destination)
 
     @staticmethod
     def move_file(source, destination):
-        FileOp.create_file_dir(destination)
+        F.create_file_dir(destination)
         shutil.move(source, destination)
 
     @staticmethod
@@ -141,7 +134,7 @@ class FileOp:
     @staticmethod
     def remove_dir(dir_path):
         if os.path.exists(dir_path):
-            shutil.rmtree(dir_path, onerror=FileOp.remove_readonly)
+            shutil.rmtree(dir_path, onerror=F.remove_readonly)
             return True
         return False
 
@@ -155,7 +148,7 @@ class FileOp:
 
     @staticmethod
     def remove_file(file_path):
-        if FileOp.file_exists(file_path):
+        if F.file_exists(file_path):
             os.remove(file_path)
             return True
         return False
@@ -180,7 +173,7 @@ class FileOp:
         except Exception as e:
             size = 0
             print("Exception occurred while calculating file size: " + str(e))
-        return FileOp.convert_unit(size, size_type)
+        return F.convert_unit(size, size_type)
 
     @staticmethod
     def get_dir_list(file_path):
@@ -204,7 +197,7 @@ class FileOp:
     @staticmethod
     def read_priv_app_temp_file(file_path, encoding='cp437'):
         return_list = []
-        if FileOp.file_exists(file_path):
+        if F.file_exists(file_path):
             file = open(file_path, encoding=encoding)
             text = file.readlines()
             for line in text:
@@ -216,14 +209,14 @@ class FileOp:
                     except Exception as e:
                         return_list = ["Exception: " + str(e)]
             file.close()
-            FileOp.remove_file(file_path)
+            F.remove_file(file_path)
         else:
             return_list.append("Exception: " + str(1001))
         return return_list
 
     @staticmethod
     def read_package_name(file_path, encoding='cp437'):
-        if FileOp.file_exists(file_path):
+        if F.file_exists(file_path):
             file = open(file_path, encoding=encoding)
             text = file.readline()
             if text.startswith("package:"):
@@ -235,14 +228,14 @@ class FileOp:
                     index1 = text.find("'")
                     text = text[0: index1]
             file.close()
-            FileOp.remove_file(file_path)
+            F.remove_file(file_path)
         else:
             text = "Exception: " + str(1001)
         return text
 
     @staticmethod
     def read_package_version(file_path, encoding='cp437'):
-        if FileOp.file_exists(file_path):
+        if F.file_exists(file_path):
             file = open(file_path, encoding=encoding)
             text = file.readline()
             if text.__contains__("versionName="):
@@ -251,14 +244,14 @@ class FileOp:
                 index1 = text.find("'")
                 text = text[0: index1]
             file.close()
-            FileOp.remove_file(file_path)
+            F.remove_file(file_path)
         else:
             text = "Exception: " + str(1001)
         return text
 
     @staticmethod
     def read_key(file_path, key, encoding='cp437'):
-        if FileOp.file_exists(file_path):
+        if F.file_exists(file_path):
             file = open(file_path, encoding=encoding)
             text = file.readline()
             if text.__contains__(f"{key}="):
@@ -267,15 +260,15 @@ class FileOp:
                 index1 = text.find("'")
                 text = text[0: index1]
             file.close()
-            FileOp.remove_file(file_path)
+            F.remove_file(file_path)
         else:
             text = "Exception: " + str(1001)
         return text
 
     @staticmethod
     def write_string_file(str_data, file_path):
-        FileOp.create_file_dir(file_path)
-        if FileOp.file_exists(file_path):
+        F.create_file_dir(file_path)
+        if F.file_exists(file_path):
             os.remove(file_path)
         file = open(file_path, "w")
         file.write(str_data)
@@ -291,8 +284,8 @@ class FileOp:
 
     @staticmethod
     def write_string_in_lf_file(str_data, file_path):
-        FileOp.create_file_dir(file_path)
-        if FileOp.file_exists(file_path):
+        F.create_file_dir(file_path)
+        if F.file_exists(file_path):
             os.remove(file_path)
         file = open(file_path, "w", newline='\n')
         file.write(str_data)
@@ -300,7 +293,7 @@ class FileOp:
 
     @staticmethod
     def read_string_file(file_path):
-        if FileOp.file_exists(file_path):
+        if F.file_exists(file_path):
             file = open(file_path, "r", encoding='cp437')
             lines = file.readlines()
             file.close()
@@ -311,7 +304,7 @@ class FileOp:
 
     @staticmethod
     def read_binary_file(file_path):
-        if FileOp.file_exists(file_path):
+        if F.file_exists(file_path):
             file = open(file_path, "rb")
             lines = file.readlines()
             file.close()
@@ -322,7 +315,7 @@ class FileOp:
 
     @staticmethod
     def get_md5(file_path):
-        if FileOp.file_exists(file_path):
+        if F.file_exists(file_path):
             md5_hash = hashlib.md5()
             a_file = open(file_path, "rb")
             content = a_file.read()
