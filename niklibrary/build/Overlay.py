@@ -1,3 +1,5 @@
+import os
+
 from niklibrary.helper.Cmd import Cmd
 
 
@@ -6,7 +8,7 @@ class Overlay:
     def __init__(self, overlay_path):
         self.path = overlay_path
         self.valid = False
-        if str(overlay_path).lower().__contains__("overlay") and str(overlay_path).lower().endswith(".apk"):
+        if str(overlay_path).lower().__contains__(os.sep + "overlay") and str(overlay_path).lower().endswith(".apk"):
             self.valid = True
 
     def extract_overlay(self, extract_dir_path=None, override_validity=False):
