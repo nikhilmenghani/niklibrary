@@ -26,6 +26,10 @@ class ExtractOp:
                 for file in files:
                     file_path = str(os.path.join(root, file))
                     if file_path.lower().__contains__("overlay"):
-                        o = Overlay(file_path)
-                        if not o.extract_overlay():
-                            print("Overlay extraction of " + file_path + " failed")
+                        ExtractOp.extract_overlay(file_path)
+
+    @staticmethod
+    def extract_overlay(file_path):
+        o = Overlay(file_path)
+        if not o.extract_overlay():
+            print("Overlay extraction of " + file_path + " failed")
