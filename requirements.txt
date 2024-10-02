@@ -8,3 +8,4 @@ python-gitlab~=4.12.2
 beautifulsoup4==4.12.3
 requests~=2.32.3
 python-dotenv~=1.0.1
+pysftp~=0.2.9
