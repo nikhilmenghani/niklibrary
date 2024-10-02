@@ -9,8 +9,8 @@ class Overlay:
         if str(overlay_path).lower().__contains__("overlay") and str(overlay_path).lower().endswith(".apk"):
             self.valid = True
 
-    def extract_overlay(self, extract_dir_path=None):
-        if not self.valid:
+    def extract_overlay(self, extract_dir_path=None, override_validity=False):
+        if not override_validity and not self.valid:
             print(f"Overlay {self.path} does not seem valid")
             return False
         cmd = Cmd()
