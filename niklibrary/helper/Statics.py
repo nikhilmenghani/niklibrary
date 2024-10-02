@@ -153,9 +153,9 @@ class Statics:
             case ("stable"):
                 return f"{sourceforge_root_directory}/Releases"
             case ("beta"):
-                return f"{sourceforge_root_directory}/Next-Releases"
+                return f"{sourceforge_root_directory}-beta/Next-Releases"
             case ("next"):
-                return f"{sourceforge_root_directory}/Next-Releases"
+                return f"{sourceforge_root_directory}-beta/Next-Releases"
             case _:
                 return f"{sourceforge_root_directory}/{release_dir}"
 
