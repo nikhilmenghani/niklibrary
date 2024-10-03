@@ -15,7 +15,7 @@ class Json:
         try:
             with open(file_name, 'w') as file:
                 json_dumps_str = json.dumps(json_dict, indent=4, sort_keys=True)
-                file.write(json_dumps_str + '\n')
+                file.write(json_dumps_str)
                 return True
         except Exception as e:
             print(e)
