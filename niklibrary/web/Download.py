@@ -1,6 +1,5 @@
 import os
 import requests
-
 from niklibrary.helper.Assets import Assets
 
 
@@ -8,7 +7,7 @@ class Download:
 
     @staticmethod
     def url(url):
-        base_name = next((f1 for f1 in url.split('/') if f1.endswith('.zip')), None);
+        base_name = next((f1 for f1 in url.split('/') if f1.endswith('.zip')), None)
         output_file = Assets.cwd + os.path.sep + base_name
         if os.path.exists(output_file):
             print(f"{output_file} already exists")

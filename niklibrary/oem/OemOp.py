@@ -1,26 +1,35 @@
+import os
 import requests
 from bs4 import BeautifulSoup
 import re
 from collections import defaultdict
 from datetime import datetime
 
-from niklibrary.configuration import Config
+class OemOp:
 
+    @staticmethod
+    def write_all_files(dir_path, overwrite=True):
+        all_files_path = dir_path + os.path.sep + "all_files.txt"
+        if overwrite or not os.path.exists(all_files_path):
+            with open(all_files_path, "w") as f:
+                directory = str(dir_path)
+                # Walk through the directory and list files
+                for root, dirs, files in os.walk(directory):
+                    for file in files:
+                        # Write the relative file path to the file
+                        relative_path = os.path.relpath(os.path.join(root, file), directory)
+                        f.write(relative_path.replace("\\", "/") + '\n')
+        else:
+            print("All files already written")
 
-class Google:
-    def __init__(self, device_name=Config.OEM, url="https://developers.google.com/android/ota"):
-        self.url = url
-        self.header = {
+    @staticmethod
+    def get_latest_ota_url(device_name):
+        url = "https://developers.google.com/android/ota"
+        header = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
                           '(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
-        self.device_name = device_name
-
-    def get_latest_ota_url(self, device_name=None):
-        base_url = self.url
-        if not device_name:
-            device_name = self.device_name
         try:
-            response = requests.get(base_url, cookies={"devsite_wall_acks": "nexus-ota-tos"}, headers=self.header)
+            response = requests.get(url, cookies={"devsite_wall_acks": "nexus-ota-tos"}, headers=header)
             if response.status_code != 200:
                 raise Exception(f"Failed to fetch the page. Status code: {response.status_code}")
         except Exception as e:

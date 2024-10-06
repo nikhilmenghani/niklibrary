@@ -127,9 +127,7 @@ class F:
 
     @staticmethod
     def file_exists(file_path):
-        if os.path.exists(file_path):
-            return True
-        return False
+        return os.path.exists(file_path)
 
     @staticmethod
     def remove_dir(dir_path):
