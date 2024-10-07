@@ -84,10 +84,14 @@ class SystemStat:
         # P.green(f"Java version: {java_version}")
         # P.green("---------------------------------------")
         if (not Config.ENVIRONMENT_TYPE == "production") and Config.ENVIRONMENT_TYPE == "dev":
+            # Set executable permission on adb_path
+            SystemStat.run_command(['chmod', '+x', Assets.adb_path])
             adb_version = SystemStat.run_command([f"{Assets.adb_path}", "version"])
             P.green("---------------------------------------")
             P.green(f"ADB version: {adb_version}")
         P.green("---------------------------------------")
+        # Set executable permission on aapt_path
+        SystemStat.run_command(['chmod', '+x', Assets.aapt_path])
         aapt_version = SystemStat.run_command([f"{Assets.aapt_path}", "version"])
         P.green(f"AAPT version: {aapt_version}")
         P.green("---------------------------------------")
