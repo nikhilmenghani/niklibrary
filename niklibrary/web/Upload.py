@@ -90,8 +90,14 @@ class Upload:
                         self.close_connection()
                         self.sftp = pysftp.Connection(host=self.host, username=self.username, password=self.password)
                         return execution_status
-                putinfo = self.sftp.put(file_name, remote_filename)
-                print(putinfo)
+                try:
+                    putinfo = self.sftp.put(file_name, remote_filename)
+                    print(putinfo)
+                except Exception as e:
+                    P.red("Exception while uploading file: " + str(e))
+                    P.yellow("Trying to upload again after 3 seconds...")
+                    putinfo = self.sftp.put(file_name, remote_filename)
+                    print(putinfo)
                 P.green(f'File uploaded successfully to {remote_directory}/{remote_filename}')
                 download_link = Statics.get_download_link(file_name, remote_directory)
                 P.magenta("Download Link: " + download_link)
