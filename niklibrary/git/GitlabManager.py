@@ -1,6 +1,7 @@
 import math
 import shutil
 import time
+from datetime import datetime
 from pathlib import Path
 import gitlab
 from niklibrary.git.GitOp import GitOp
@@ -60,6 +61,24 @@ class GitLabManager:
         # Print details of each project
         for project in projects:
             if project.path == project_name:
+                return project
+        return None
+
+    def get_oem_project(self, oem, android_version):
+        project_details_list = []
+        for project in self.list_projects_with_ids():
+            if str(project.name).__contains__(f"{android_version}_") and str(project.name).__contains__(f"{oem}"):
+                project_details = self.gl.projects.get(project.id, statistics=True)
+                created_at = datetime.strptime(project_details.created_at, '%Y-%m-%dT%H:%M:%S.%fZ')
+                project_details_list.append((project, created_at))
+        project_details_list.sort(key=lambda x: x[1], reverse=True)
+        for project, created_at in project_details_list:
+            if str(project.name).__contains__(str(android_version)) and str(project.name).__contains__(f"{oem}"):
+                print(f'Project Name: {project.name}, '
+                      f'Project Path: {project.path}, '
+                      f'Project ID: {project.id}, '
+                      f'Namespace: {project.namespace["path"]}, '
+                      f'Creation Date: {created_at}, ')
                 return project
         return None
 
