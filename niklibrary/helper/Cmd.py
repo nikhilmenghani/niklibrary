@@ -99,28 +99,37 @@ class Cmd:
                     break
         apk_path = os.path.join(folder_name, "dist", f"{Path(folder_name).name}.apk")
         if built_apk and F.file_exists(apk_path):
-            print(f"Signing {Path(apk_path).name}")
-            signed_apk = False
-            self.COMMAND_SIGN_APK[9] = apk_path
-            output_line = self.execute_cmd(self.COMMAND_SIGN_APK)
-            if len(output_line) > 0:
-                for line in output_line:
-                    print(line)
-                    if line.__contains__("Signed"):
-                        signed_apk = True
-                        break
-            if signed_apk:
-                print(f"Zipaligning {apk_path}")
-                self.COMMAND_ZIPALIGN_APK[5] = apk_path
-                aligned_apk_path = os.path.join(folder_name, "dist", f"{Path(folder_name).name}-aligned.apk")
-                self.COMMAND_ZIPALIGN_APK[6] = aligned_apk_path
-                output_line = self.execute_cmd(self.COMMAND_ZIPALIGN_APK)
-                if len(output_line) > 0:
-                    for line in output_line:
-                        print(line)
-                        if line.__contains__("Verification successful") or line.__contains__("Verification successful"):
-                            return aligned_apk_path
+            if self.sign_apk(apk_path):
+                return self.zipalign_apk(apk_path)
         return ""
+
+    def zipalign_apk(self, apk_path, sign_apk=True):
+        print(f"Zipaligning {apk_path}")
+        self.COMMAND_ZIPALIGN_APK[5] = apk_path
+        aligned_apk_path = apk_path.replace(".apk", "-aligned.apk")
+        self.COMMAND_ZIPALIGN_APK[6] = aligned_apk_path
+        output_line = self.execute_cmd(self.COMMAND_ZIPALIGN_APK)
+        if len(output_line) > 0:
+            for line in output_line:
+                print(line)
+                if line.__contains__("Verification successful") or line.__contains__("Verification successful"):
+                    if sign_apk and self.sign_apk(aligned_apk_path):
+                        return aligned_apk_path
+                    else:
+                        return aligned_apk_path
+        return ""
+
+    def sign_apk(self, apk_path):
+        print(f"Signing {Path(apk_path).name}")
+        self.COMMAND_SIGN_APK[9] = apk_path
+        output_line = self.execute_cmd(self.COMMAND_SIGN_APK)
+        if len(output_line) > 0:
+            for line in output_line:
+                print(line)
+                if line.__contains__("Signed"):
+                    print(f"APK {apk_path} signed successfully!")
+                    return True
+        return False
 
     def decompile_apk(self, apk_path, output_folder):
         self.COMMAND_DECOMPILE_APK[4] = apk_path

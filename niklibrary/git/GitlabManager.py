@@ -1,4 +1,5 @@
 import math
+import os
 import shutil
 import time
 from datetime import datetime
@@ -11,7 +12,7 @@ from niklibrary.helper.Statics import Statics
 
 
 class GitLabManager:
-    def __init__(self, gitlab_url='https://gitlab.com', private_token=None):
+    def __init__(self, gitlab_url='https://gitlab.com', private_token=os.getenv('GITLAB_TOKEN', None)):
         self.token = private_token
         self.gl = gitlab.Gitlab(gitlab_url, private_token=private_token)
         self.gl.auth()
@@ -199,7 +200,7 @@ class GitLabManager:
                 project = self.create_repository(repo_name, provide_owner_access=True, user_id=user_id)
                 if gitattributes is not None:
                     self.create_and_commit_file(project_id=project.id, file_path=".gitattributes",
-                                                         content=gitattributes)
+                                                content=gitattributes)
             return project
         except Exception as e:
             print(f"Failed to reset repository: {e}")
