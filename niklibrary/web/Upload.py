@@ -1,5 +1,6 @@
 import os
 import platform
+import time
 from pathlib import Path
 import pysftp
 
@@ -96,6 +97,10 @@ class Upload:
                 except Exception as e:
                     P.red("Exception while uploading file: " + str(e))
                     P.yellow("Trying to upload again after 3 seconds...")
+                    self.close_connection()
+                    time.sleep(3)
+                    P.green("Reconnecting to SourceForge.net...")
+                    self.sftp = pysftp.Connection(host=self.host, username=self.username, password=self.password)
                     putinfo = self.sftp.put(file_name, remote_filename)
                     print(putinfo)
                 P.green(f'File uploaded successfully to {remote_directory}/{remote_filename}')
