@@ -98,7 +98,7 @@ class Statics:
     def get_file_bytes(file_name):
         file_stats = os.stat(file_name)
         # 1000 instead of 1024 because it's better to require more size than what gapps exactly takes
-        return math.ceil(file_stats.st_size / 1000)
+        return math.ceil(file_stats.st_size / 1024)
 
     @staticmethod
     def get_temp_packages_directory(android_version, arch="arm64"):
