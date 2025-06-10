@@ -11,4 +11,4 @@ python-dotenv~=1.0.1
 pysftp~=0.2.9
 pexpect~=4.9.0
 psutil~=7.0.0
-cryptography~=44.0.0
+cryptography~=45.0.4
