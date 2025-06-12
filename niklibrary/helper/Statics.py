@@ -16,7 +16,9 @@ class Statics:
         '13': {'sdk': '33', 'code': 'T'},
         '14': {'sdk': '34', 'code': 'U'},
         '15': {'sdk': '35', 'code': 'V'},
+        '16': {'sdk': '36', 'code': 'Baklava'},
     }
+
     is_system_app = 1
     is_priv_app = 2
     system_root_dir = "/system/product"
