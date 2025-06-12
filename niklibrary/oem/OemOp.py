@@ -5,6 +5,7 @@ import re
 from collections import defaultdict
 from datetime import datetime
 
+
 class OemOp:
 
     @staticmethod
@@ -23,7 +24,7 @@ class OemOp:
             print("All files already written")
 
     @staticmethod
-    def get_latest_ota_url(device_name):
+    def get_latest_ota_url(device_name, android_version=None):
         url = "https://developers.google.com/android/ota"
         header = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
@@ -88,6 +89,8 @@ class OemOp:
         for date in sorted_dates:
             for url_info in categorized_urls[date]:
                 if url_info['category'] == 'Regular':
+                    if android_version and f"{android_version}.0.0" not in url_info['version_info']:
+                        continue
                     latest_regular_url = url_info['url']
                     break
             if latest_regular_url:
