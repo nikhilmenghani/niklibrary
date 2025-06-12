@@ -22,14 +22,14 @@ setup(
         'pysftp>=0.2.9',
         'PyYAML>=6.0.2',
         'psutil>=6.0.0',
-        'setuptools>=72.1.0',
+        'setuptools~=80.9.0',
         'requests>=2.32.3',
         'GitPython>=3.1.43',
         'pexpect>=4.9.0',
         'PyGithub>=2.3.0',
         'python-gitlab>=4.7.0',
         'cryptography>=43.0.0',
-        'python-dotenv>=1.0.1,<1.2.0'
+        'python-dotenv~=1.1.0'
     ],
     entry_points={
         'console_scripts': [
