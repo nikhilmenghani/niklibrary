@@ -11,6 +11,8 @@ import subprocess
 class Cmd:
     commands_list = []
     adb_path = ['adb']
+    apktool_version = "2.11.1"
+    apktool_path = Assets.get(f"apktool_{apktool_version}.jar")
     if sys.platform.startswith('win32'):
         commands_list = ['cmd', '/c']
         adb_path = [Assets.adb_path]
@@ -44,8 +46,8 @@ class Cmd:
     COMMAND_DEVICE_ARCHITECTURE = adb_path + ["shell", "getprop", "ro.product.cpu.abi"]
     COMMAND_ADB_CONNECT_DEVICES = adb_path + ["connect", "IP"]
     COMMAND_SIGN_ZIP = ["java", "-jar", sign_jar_path, "file_path", sign_jar_path, "false"]
-    COMMAND_BUILD_APK = ["java", "-jar", Assets.get("apktool_2.10.0.jar"), "b", "folder_name"]
-    COMMAND_DECOMPILE_APK = ["java", "-jar", Assets.get("apktool_2.10.0.jar"), "d", "apk_path", "-o", "folder_name"]
+    COMMAND_BUILD_APK = ["java", "-jar", apktool_path, "b", "folder_name"]
+    COMMAND_DECOMPILE_APK = ["java", "-jar", apktool_path, "d", "apk_path", "-o", "folder_name"]
     COMMAND_SIGN_APK = ["java", "-jar", Assets.get("apksigner.jar"), "sign", "--key", Assets.get("cert.pk8"), "--cert",
                         Assets.get("cert.x509.pem"), "-v", "outfile.apk"]
     COMMAND_ZIPALIGN_APK = ["zipalign", "-p", "-f", "-v", "4", "infile.apk", "outfile.apk"]
