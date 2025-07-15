@@ -7,7 +7,7 @@ PyGithub~=2.6.1
 python-gitlab~=6.0.0
 beautifulsoup4==4.13.4
 requests~=2.32.4
-python-dotenv~=1.1.0
+python-dotenv~=1.1.1
 pysftp~=0.2.9
 pexpect~=4.9.0
 psutil~=7.0.0
