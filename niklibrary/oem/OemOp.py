@@ -100,3 +100,41 @@ class OemOp:
             raise Exception(f"No valid regular OTA URLs found for device {device_name}.")
 
         return latest_regular_url
+
+    @staticmethod
+    def get_google_devices():
+        url = "https://developers.google.com/android/ota"
+        header = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                          '(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+        try:
+            response = requests.get(url, cookies={"devsite_wall_acks": "nexus-ota-tos"}, headers=header)
+            if response.status_code != 200:
+                raise Exception(f"Failed to fetch the page. Status code: {response.status_code}")
+        except Exception as e:
+            print(f"Failed to fetch the page. Error: {str(e)}")
+            return None
+        soup = BeautifulSoup(response.content, 'html.parser')
+        google_devices = {}
+        # Search only inside the article body
+        article = soup.find("div", class_="devsite-article-body")
+        if not article:
+            print("No article body found.")
+            return None
+        h2elements = article.find_all("h2")
+        # Find all h2 elements with data-text containing "for"
+        for h2 in h2elements:
+            data_text = h2["data-text"]
+
+            if "for" in data_text:
+                # Example: '"frankel" for Pixel 10'
+                # Split on 'for'
+                try:
+                    code_name = h2.get("id")
+                    device_name = data_text.split("for", 1)[1].strip()
+                    if code_name and device_name:
+                        google_devices[code_name] = device_name
+                except Exception as parse_error:
+                    print(f"Skipping malformed h2: {parse_error}")
+
+        return google_devices
