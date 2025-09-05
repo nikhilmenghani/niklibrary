@@ -227,6 +227,7 @@ class OemOp:
 
             # Normalize paths
             apk_posix = apk_path.as_posix()
+            print(f"Processing APK: {apk_posix}")
             partition_posix = partition_dir.as_posix()
 
             try:
@@ -237,6 +238,8 @@ class OemOp:
             # Compute location strings once
             file_location = apk_posix[dir_sep_len:]  # relative to repo_dir
             print(f"Processing {file_location} ...")
+            file_location = apk_posix[len(repo_dir) + 1:]
+            print(f"File location: {file_location}")
             file_path_rel = apk_posix[len(partition_posix) + 1:]  # relative to partition_dir
 
             # folder name = first segment after partition_dir (priv-app/app child)
