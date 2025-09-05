@@ -199,7 +199,9 @@ class OemOp:
         supported_partitions = ("system_ext", "product")
         supported_types = ("priv-app", "app")
         repo_dir = Path(repo_dir)
+        print(f"Scanning repository at {repo_dir} ...")
         dir_sep_len = len(repo_dir.as_posix()) + 1  # for slicing location strings
+        print(f"Using dir_sep_len = {dir_sep_len}")
         gapps_dict = defaultdict(list)
         lock = Lock()
 
@@ -234,6 +236,7 @@ class OemOp:
 
             # Compute location strings once
             file_location = apk_posix[dir_sep_len:]  # relative to repo_dir
+            print(f"Processing {file_location} ...")
             file_path_rel = apk_posix[len(partition_posix) + 1:]  # relative to partition_dir
 
             # folder name = first segment after partition_dir (priv-app/app child)
