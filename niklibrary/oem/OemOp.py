@@ -198,68 +198,63 @@ class OemOp:
     def get_google_oem_dump_dict_async(repo_dir):
         supported_partitions = ("system_ext", "product")
         supported_types = ("priv-app", "app")
-        repo_dir = Path(repo_dir)
+
+        repo_dir = Path(repo_dir).resolve()
         print(f"Scanning repository at {repo_dir} ...")
-        dir_sep_len = len(repo_dir.as_posix()) + 1  # for slicing location strings
-        print(f"Using dir_sep_len = {dir_sep_len}")
+
         gapps_dict = defaultdict(list)
         lock = Lock()
-
         cmd = Cmd()
 
         work_items = []
         for partition in supported_partitions:
             for apk_type in supported_types:
-                partition_dir = repo_dir / partition / apk_type
+                partition_dir = (repo_dir / partition / apk_type)
                 if not partition_dir.is_dir():
                     continue
                 for root, _, files in os.walk(partition_dir):
                     for fname in files:
-                        if not fname.endswith(".apk"):
-                            continue
-                        apk_path = Path(root) / fname
-                        work_items.append((partition, apk_type, partition_dir, apk_path))
+                        if fname.endswith(".apk"):
+                            work_items.append((partition, apk_type, partition_dir, Path(root) / fname))
+
+        def _relpath_safe(path: Path, start: Path) -> str:
+            """Return posix relpath even across drives/case issues."""
+            try:
+                return path.relative_to(start).as_posix()
+            except Exception:
+                try:
+                    return Path(os.path.relpath(path.as_posix(), start.as_posix())).as_posix()
+                except Exception:
+                    # last resort: keep absolute posix path
+                    return path.as_posix()
 
         def process_apk(item):
             partition, apk_type, partition_dir, apk_path = item
-            apk_path = apk_path.resolve()
-            partition_dir = partition_dir.resolve()
+            apk_path_abs = apk_path.resolve()
+            partition_dir_abs = partition_dir.resolve()
 
-            # Normalize paths
-            apk_posix = apk_path.as_posix()
+            apk_posix = apk_path_abs.as_posix()
             print(f"Processing APK: {apk_posix}")
-            partition_posix = partition_dir.as_posix()
 
             try:
-                file_size = os.stat(apk_path).st_size
+                file_size = os.stat(apk_path_abs).st_size
             except OSError:
-                return None  # skip unreadable files
+                return None
 
-            # Compute location strings once
-            file_location = apk_posix[dir_sep_len:]  # relative to repo_dir
-            print(f"Processing {file_location} ...")
-            file_location = apk_posix[len(repo_dir) + 1:]
+            file_location = _relpath_safe(apk_path_abs, repo_dir)  # relative to repo root
             print(f"File location: {file_location}")
-            file_path_rel = apk_posix[len(partition_posix) + 1:]  # relative to partition_dir
+            file_path_rel = _relpath_safe(apk_path_abs, partition_dir_abs)  # relative to partition/<type>
 
             # folder name = first segment after partition_dir (priv-app/app child)
-            # e.g. product/app/<folder>/<apk>.apk
-            folder_name = Path(file_path_rel).parts[0] if "/" in file_path_rel or "\\" in file_path_rel else \
-                Path(file_path_rel).parts[0]
+            parts = Path(file_path_rel).parts
+            folder_name = parts[0] if parts else ""
 
-            # is stub?
             is_stub = folder_name.endswith("-Stub")
             base_folder = folder_name[:-5] if is_stub else folder_name
 
-            # === Metadata extraction ===
-            # If possible, implement a single call that returns (pkg, ver, vcode)
-            # e.g. pkg, version_name, version_code = cmd.get_package_meta(apk_posix)
             package_name = cmd.get_package_name(apk_posix)
             package_version = cmd.get_package_version(apk_posix)
             version_code = cmd.get_package_version_code(apk_posix)
-
-            # derive numeric version string quickly
-            # (keep lightweight; avoids regex overhead)
             v_code_numeric = "".join(ch for ch in package_version if ch.isdigit())
 
             base_dict = {
@@ -278,38 +273,36 @@ class OemOp:
 
             results = [base_dict]
 
-            # If stub, also include any *.apk.gz in the sibling non-stub folder
             if is_stub:
-                gz_dir = (partition_dir / base_folder)
+                gz_dir = partition_dir_abs / base_folder
                 if gz_dir.is_dir():
                     for root, _, files in os.walk(gz_dir):
                         for fn in files:
-                            if not fn.endswith(".apk.gz"):
-                                continue
-                            gz_path = Path(root) / fn
-                            try:
-                                gz_size = os.stat(gz_path).st_size
-                            except OSError:
-                                continue
-                            gz_file_rel = (gz_path.as_posix())[len(partition_posix) + 1:]
-                            gz_file_location = (gz_path.as_posix())[dir_sep_len:]
-                            results.append({
-                                "partition": partition,
-                                "type": apk_type,
-                                "folder": base_folder,
-                                "version_code": version_code,
-                                "v_code": v_code_numeric,
-                                "file": gz_file_rel,
-                                "package": package_name,
-                                "version": package_version,
-                                "location": gz_file_location,
-                                "isstub": True,
-                                "size": gz_size
-                            })
+                            if fn.endswith(".apk.gz"):
+                                gz_path = Path(root) / fn
+                                try:
+                                    gz_size = os.stat(gz_path).st_size
+                                except OSError:
+                                    continue
+                                gz_file_rel = _relpath_safe(gz_path.resolve(), partition_dir_abs)
+                                gz_file_location = _relpath_safe(gz_path.resolve(), repo_dir)
+                                results.append({
+                                    "partition": partition,
+                                    "type": apk_type,
+                                    "folder": base_folder,
+                                    "version_code": version_code,
+                                    "v_code": v_code_numeric,
+                                    "file": gz_file_rel,
+                                    "package": package_name,
+                                    "version": package_version,
+                                    "location": gz_file_location,
+                                    "isstub": True,
+                                    "size": gz_size
+                                })
 
             return package_name, results
 
-        max_workers = os.cpu_count()
+        max_workers = os.cpu_count() or 4
         with ThreadPoolExecutor(max_workers=max_workers) as ex:
             futures = [ex.submit(process_apk, item) for item in work_items]
             for fut in as_completed(futures):
