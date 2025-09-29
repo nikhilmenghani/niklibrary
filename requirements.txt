@@ -5,7 +5,7 @@ nikassets~=0.13
 GitPython~=3.1.45
 PyGithub~=2.8.1
 python-gitlab~=6.3.0
-beautifulsoup4==4.13.5
+beautifulsoup4==4.14.0
 requests~=2.32.5
 python-dotenv~=1.1.1
 pexpect~=4.9.0
