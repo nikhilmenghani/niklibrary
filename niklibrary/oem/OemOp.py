@@ -179,6 +179,8 @@ class OemOp:
         h2elements = article.find_all("h2")
         # Find all h2 elements with data-text containing "for"
         for h2 in h2elements:
+            if not h2.has_attr("data-text"):
+                continue
             data_text = h2["data-text"]
 
             if "for" in data_text:
