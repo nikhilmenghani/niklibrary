@@ -29,7 +29,7 @@ setup(
         'PyGithub>=2.3.0',
         'python-gitlab>=4.7.0',
         'cryptography>=43.0.0',
-        'python-dotenv~=1.1.0'
+        'python-dotenv>=1.1,<1.3'
     ],
     entry_points={
         'console_scripts': [
