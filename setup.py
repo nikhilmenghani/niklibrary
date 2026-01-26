@@ -22,7 +22,7 @@ setup(
         'pysftp>=0.2.9',
         'PyYAML>=6.0.2',
         'psutil>=6.0.0',
-        'setuptools~=80.9.0',
+        'setuptools~=80.10.2',
         'requests>=2.32.3',
         'GitPython>=3.1.43',
         'pexpect>=4.9.0',
