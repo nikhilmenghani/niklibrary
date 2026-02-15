@@ -16,17 +16,18 @@ from niklibrary.helper.Statics import Statics
 class OemOp:
 
     @staticmethod
-    def write_all_files(dir_path, overwrite=True):
-        all_files_path = dir_path + os.path.sep + "all_files.txt"
+    def write_all_files(dir_path, overwrite=True, skip_git_objects=True):
+        all_files_path = os.path.join(dir_path, "all_files.txt")
+
         if overwrite or not os.path.exists(all_files_path):
-            with open(all_files_path, "w") as f:
+            with open(all_files_path, "w", encoding="utf-8") as f:
                 directory = str(dir_path)
-                # Walk through the directory and list files
                 for root, dirs, files in os.walk(directory):
+                    if skip_git_objects:
+                        dirs[:] = [d for d in dirs if d != ".git"]
                     for file in files:
-                        # Write the relative file path to the file
                         relative_path = os.path.relpath(os.path.join(root, file), directory)
-                        f.write(relative_path.replace("\\", "/") + '\n')
+                        f.write(relative_path.replace("\\", "/") + "\n")
         else:
             print("All files already written")
 
