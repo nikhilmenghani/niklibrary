@@ -1,7 +1,7 @@
 colorama~=0.4.6
 pytz~=2025.2
 setuptools~=82.0.0
-nikassets~=0.15
+nikassets~=0.16
 GitPython~=3.1.45
 PyGithub~=2.8.1
 python-gitlab~=8.0.0

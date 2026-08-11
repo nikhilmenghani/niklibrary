@@ -11,7 +11,7 @@ import subprocess
 class Cmd:
     commands_list = []
     adb_path = ['adb']
-    apktool_version = "2.11.1"
+    apktool_version = "3.0.2"
     apktool_path = Assets.get(f"apktool_{apktool_version}.jar")
     if sys.platform.startswith('win32'):
         commands_list = ['cmd', '/c']
