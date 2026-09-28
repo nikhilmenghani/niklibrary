@@ -17,6 +17,7 @@ class Statics:
         '14': {'sdk': '34', 'code': 'U'},
         '15': {'sdk': '35', 'code': 'V'},
         '16': {'sdk': '36', 'code': 'Baklava'},
+        '17': {'sdk': '37', 'code': 'CinnamonBun'},
     }
 
     is_system_app = 1
